@@ -1,2 +1,5 @@
 Release/*
 core/*
+.project
+.settings/*
+.ino.cpp
