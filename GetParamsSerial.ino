@@ -1,10 +1,13 @@
 #include <Arduino.h>
-#include <HardwareSerial.h>
+#include <SoftwareSerial.h>
 
+SoftwareSerial mySerial(10, 11); // RX, TX
 
 void setup() {
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
+  while (!Serial) {}
+  mySerial.begin(19200);
 }
 
 void checkDataReceived ( String );
@@ -19,6 +22,7 @@ boolean stringComplete = false;
 String prefixDetect [6] = { "AT", "END", "text=", "bright=", "update=", "color="};
 
 void loop() {
+	if (mySerial.available()) mySerialEvent();
 	if (!receiveMode && stringComplete) {
 		delay(1000);
 	}
@@ -66,6 +70,38 @@ void serialEvent() {
     }
     inputString = "";
   }
+}
+
+// serial event for software serial connection. Port defined by user (example: port 10 and 11)
+void mySerialEvent(){
+	if (!receiveMode) {
+	    while (Serial.available()) {
+	      char a = Serial.read();
+	      if (!(a == '\r' || a == '\n')) {
+	        inputString += a;
+	      }
+	    }
+	    receiveMode = startConfigMode(inputString);
+	    if (receiveMode) {
+	      Serial.println("OK");
+	    }
+	    inputString = "";
+	  }
+	  else {
+	    while (Serial.available()) {
+	      char a = Serial.read();
+	      if (!(a == '\r' || a == '\n')) {
+	      	inputString += a;
+	      }
+	    }
+	    checkDataReceived(inputString);
+
+	    if (endConfigMode(inputString)) {
+	    	Serial.println("OK");
+	    	receiveMode = false;
+	    }
+	    inputString = "";
+	  }
 }
 
 boolean startConfigMode(String stringReceived){
