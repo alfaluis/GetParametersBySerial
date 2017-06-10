@@ -4,3 +4,4 @@ core/*
 .settings/*
 .ino.cpp
 .cproject
+/Release/

@@ -75,21 +75,21 @@ void serialEvent() {
 // serial event for software serial connection. Port defined by user (example: port 10 and 11)
 void mySerialEvent(){
 	if (!receiveMode) {
-	    while (Serial.available()) {
-	      char a = Serial.read();
+	    while (mySerial.available()) {
+	      char a = mySerial.read();
 	      if (!(a == '\r' || a == '\n')) {
 	        inputString += a;
 	      }
 	    }
 	    receiveMode = startConfigMode(inputString);
 	    if (receiveMode) {
-	      Serial.println("OK");
+	      mySerial.println("OK");
 	    }
 	    inputString = "";
 	  }
 	  else {
-	    while (Serial.available()) {
-	      char a = Serial.read();
+	    while (mySerial.available()) {
+	      char a = mySerial.read();
 	      if (!(a == '\r' || a == '\n')) {
 	      	inputString += a;
 	      }
@@ -97,7 +97,7 @@ void mySerialEvent(){
 	    checkDataReceived(inputString);
 
 	    if (endConfigMode(inputString)) {
-	    	Serial.println("OK");
+	    	mySerial.println("OK");
 	    	receiveMode = false;
 	    }
 	    inputString = "";
